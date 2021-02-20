@@ -8,6 +8,6 @@ namespace RssActivityMonitor.Interfaces
 {
     public interface IRssActivityMonitor
     {
-        List<string> FindInactiveRssFeeds(Dictionary<string, string> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true);
+        List<string> FindInactiveRssFeeds(Dictionary<string, List<string>> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true);
     }
 }

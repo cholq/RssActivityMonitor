@@ -17,26 +17,29 @@ namespace RssActivityMonitor.Services
             this._reader = rssReader;
         }
 
-        public List<string> FindInactiveRssFeeds(Dictionary<string, string> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true)
+        public List<string> FindInactiveRssFeeds(Dictionary<string, List<string>> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true)
         {
 
             DateTimeOffset compareDate = DateTimeOffset.Now.AddDays(NumberOfDays * -1);
 
             Dictionary<string, DateTimeOffset> MostRecentActivity = new Dictionary<string, DateTimeOffset>();
 
-            foreach (KeyValuePair<string, string> feed in FeedsToCheck)
+            foreach (KeyValuePair<string, List<string>> company in FeedsToCheck)
             {
-                DateTimeOffset lastActivityDate = GetRssFeedLastActivityDate(feed.Value);
-                if (MostRecentActivity.ContainsKey(feed.Key))
+                foreach (string url in company.Value)
                 {
-                    if (MostRecentActivity[feed.Key] < lastActivityDate)
+                    DateTimeOffset lastActivityDate = GetRssFeedLastActivityDate(url);
+                    if (MostRecentActivity.ContainsKey(company.Key))
                     {
-                        MostRecentActivity[feed.Key] = lastActivityDate;
+                        if (MostRecentActivity[company.Key] < lastActivityDate)
+                        {
+                            MostRecentActivity[company.Key] = lastActivityDate;
+                        }
                     }
-                }
-                else
-                {
-                    MostRecentActivity.Add(feed.Key, lastActivityDate);
+                    else
+                    {
+                        MostRecentActivity.Add(company.Key, lastActivityDate);
+                    }
                 }
             }
 
