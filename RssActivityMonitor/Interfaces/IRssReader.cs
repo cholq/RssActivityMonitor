@@ -15,5 +15,9 @@ namespace RssActivityMonitor.Interfaces
         bool IsLoaded { get; }
 
         string ErrorMessage { get; }
+
+        DateTimeOffset LastUpdateTime { get; }
+
+        DateTimeOffset MostRecentItemPublished { get; }
     }
 }

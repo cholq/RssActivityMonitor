@@ -51,5 +51,28 @@ namespace RssActivityMonitor.Services
         {
             get { return this._errorMessage; }
         }
+
+        public DateTimeOffset LastUpdateTime
+        {
+            get
+            {
+                return IsLoaded ? this._rssFeed.LastUpdatedTime : DateTimeOffset.MinValue;
+            }
+        }
+
+        public DateTimeOffset MostRecentItemPublished
+        {
+            get
+            {
+                if (IsLoaded)
+                {
+                    return (this._rssFeed.Items.Aggregate((i1, i2) => i1.PublishDate > i2.PublishDate ? i1 : i2)).PublishDate;
+                }
+                else
+                {
+                    return DateTimeOffset.MinValue;
+                }
+            }
+        }
     }
 }

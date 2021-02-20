@@ -17,15 +17,18 @@ namespace RssActivityMonitor.TestHarness
             inputRssFeeds.Add("USA Today", "http://rssfeeds.usatoday.com/UsatodaycomNation-TopStories");
 
             IRssReader myRssReader = new RssReader();
-            bool success = false;
+            IRssActivityMonitor myActivityMonitor = new ActivityMonitor(myRssReader);
 
-            foreach(KeyValuePair<string, string> feed in inputRssFeeds)
-            {
-                success = myRssReader.LoadRssFeed(feed.Value);
-                Console.WriteLine(string.Format("Loaded feed for {0} successfully: {1}", feed.Key, myRssReader.IsLoaded.ToString()));
+            myActivityMonitor.FindInactiveRssFeeds(inputRssFeeds);
 
-                myRssReader.Close();
-            }
+            //bool success = false;
+            //foreach(KeyValuePair<string, string> feed in inputRssFeeds)
+            //{
+            //    success = myRssReader.LoadRssFeed(feed.Value);
+            //    Console.WriteLine(string.Format("Loaded feed for {0} successfully: {1}", feed.Key, myRssReader.IsLoaded.ToString()));
+
+            //    myRssReader.Close();
+            //}
         }
     }
 }

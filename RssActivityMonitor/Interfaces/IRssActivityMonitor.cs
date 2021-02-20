@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace RssActivityMonitor.Interfaces
 {
-    interface IRssActivityMonitor
+    public interface IRssActivityMonitor
     {
+        List<string> FindInactiveRssFeeds(Dictionary<string, string> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true);
     }
 }
