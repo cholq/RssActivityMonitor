@@ -49,5 +49,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RssActivityMonitor\RssActivityMonitor.csproj">
+      <Project>{51fdaf8b-03dd-498a-92e0-ffc0807322a4}</Project>
+      <Name>RssActivityMonitor</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
