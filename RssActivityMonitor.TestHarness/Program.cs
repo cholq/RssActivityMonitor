@@ -15,20 +15,13 @@ namespace RssActivityMonitor.TestHarness
             Dictionary<string, string> inputRssFeeds = new Dictionary<string, string>();
             inputRssFeeds.Add("New York Times", "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml");
             inputRssFeeds.Add("USA Today", "http://rssfeeds.usatoday.com/UsatodaycomNation-TopStories");
+            inputRssFeeds.Add("WNYC", "http://feeds.wnyc.org/experiment_podcast");
 
             IRssReader myRssReader = new RssReader();
             IRssActivityMonitor myActivityMonitor = new ActivityMonitor(myRssReader);
 
-            myActivityMonitor.FindInactiveRssFeeds(inputRssFeeds);
+            List<string> InactiveCompanies = myActivityMonitor.FindInactiveRssFeeds(inputRssFeeds);
 
-            //bool success = false;
-            //foreach(KeyValuePair<string, string> feed in inputRssFeeds)
-            //{
-            //    success = myRssReader.LoadRssFeed(feed.Value);
-            //    Console.WriteLine(string.Format("Loaded feed for {0} successfully: {1}", feed.Key, myRssReader.IsLoaded.ToString()));
-
-            //    myRssReader.Close();
-            //}
         }
     }
 }
