@@ -191,8 +191,8 @@ namespace RssActivityMonitorTests
         [TestMethod]
         public void FindInactiveRssFeeds_RssReaderErrorTreatAsInactive_ReturnListOfOne()
         {
-            DateTimeOffset inactiveDate1 = DateTimeOffset.Now.AddHours(-26);
-            DateTimeOffset inactiveDate2 = DateTimeOffset.Now.AddHours(-25);
+            DateTimeOffset inactiveDate1 = DateTimeOffset.Now.AddHours(-21);
+            DateTimeOffset inactiveDate2 = DateTimeOffset.Now.AddHours(-21);
             string companyName1 = "Fake Company";
             string companyName2 = "Other Company";
 
@@ -201,8 +201,7 @@ namespace RssActivityMonitorTests
             mock.SetupSequence(r => r.MostRecentItemPublished)
                 .Returns(inactiveDate1)
                 .Returns(inactiveDate1)
-                .Returns(inactiveDate2)
-                .Returns(inactiveDate2);
+                .Throws(new Exception("This is a fake error"));
             mock.Setup(r => r.IsLoaded).Returns(true);
             mockReader = mock.Object;
 
@@ -212,9 +211,39 @@ namespace RssActivityMonitorTests
             inputRssFeeds.Add(companyName1, new List<string>() { "http://fake.feed.xml" });
             inputRssFeeds.Add(companyName2, new List<string>() { "http://fake.second-feed.xml" });
 
-            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds, 2);
+            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds);
 
-            Assert.AreEqual(0, InactiveCompanies.Count);
+            Assert.AreEqual(1, InactiveCompanies.Count);
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void FindInactiveRssFeeds_RssReaderErrorGetThrown_ExceptionThrown()
+        {
+            DateTimeOffset inactiveDate1 = DateTimeOffset.Now.AddHours(-21);
+            DateTimeOffset inactiveDate2 = DateTimeOffset.Now.AddHours(-21);
+            string companyName1 = "Fake Company";
+            string companyName2 = "Other Company";
+
+            var mock = new Mock<IRssReader>();
+            mock.Setup(r => r.LoadRssFeed(It.IsAny<string>())).Returns(true);
+            mock.SetupSequence(r => r.MostRecentItemPublished)
+                .Returns(inactiveDate1)
+                .Returns(inactiveDate1)
+                .Throws(new Exception("This is a fake error"));
+            mock.Setup(r => r.IsLoaded).Returns(true);
+            mockReader = mock.Object;
+
+            IRssActivityMonitor monitor = new ActivityMonitor(mockReader);
+
+            Dictionary<string, List<string>> inputRssFeeds = new Dictionary<string, List<string>>();
+            inputRssFeeds.Add(companyName1, new List<string>() { "http://fake.feed.xml" });
+            inputRssFeeds.Add(companyName2, new List<string>() { "http://fake.second-feed.xml" });
+
+            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds, 1, false);
+
+            Assert.Fail("Exeption should have been raised prior to this point");
 
         }
 

@@ -28,17 +28,21 @@ namespace RssActivityMonitor.Services
             {
                 foreach (string url in company.Value)
                 {
-                    DateTimeOffset lastActivityDate = GetRssFeedLastActivityDate(url);
-                    if (MostRecentActivity.ContainsKey(company.Key))
+                    try
                     {
-                        if (MostRecentActivity[company.Key] < lastActivityDate)
-                        {
-                            MostRecentActivity[company.Key] = lastActivityDate;
-                        }
+                        DateTimeOffset lastActivityDate = GetRssFeedLastActivityDate(url);
+                        MostRecentActivity = this.AddDateTimeOffsetToDictionary(MostRecentActivity, company.Key, lastActivityDate);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        MostRecentActivity.Add(company.Key, lastActivityDate);
+                        if (ConsiderErrorsInactive)
+                        {
+                            MostRecentActivity = this.AddDateTimeOffsetToDictionary(MostRecentActivity, company.Key, DateTimeOffset.MinValue);
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
                 }
             }
@@ -56,6 +60,23 @@ namespace RssActivityMonitor.Services
             }
 
             return DateTimeOffset.MinValue;
+        }
+
+        private Dictionary<string, DateTimeOffset> AddDateTimeOffsetToDictionary(Dictionary<string, DateTimeOffset> dict, string key, DateTimeOffset value)
+        {
+            if (dict.ContainsKey(key))
+            {
+                if (dict[key] < value)
+                {
+                    dict[key] = value;
+                }
+            }
+            else
+            {
+                dict.Add(key, value);
+            }
+
+            return dict;
         }
     }
 }
