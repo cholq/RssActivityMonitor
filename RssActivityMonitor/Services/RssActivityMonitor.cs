@@ -19,6 +19,8 @@ namespace RssActivityMonitor.Services
 
         public List<string> FindInactiveRssFeeds(Dictionary<string, List<string>> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true)
         {
+            if (FeedsToCheck == null) { throw new ArgumentOutOfRangeException("FeedsToCheck", "Dictionary of Feeds to Check cannot be NULL"); }
+            if (NumberOfDays <= 0) { throw new ArgumentOutOfRangeException("NumberOfDays", "Value must be greater than zero"); }
 
             DateTimeOffset compareDate = DateTimeOffset.Now.AddDays(NumberOfDays * -1);
 

@@ -189,6 +189,37 @@ namespace RssActivityMonitorTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void FindInactiveRssFeeds_ChangeDaysParamToZero_ExceptionThrown()
+        {
+            DateTimeOffset inactiveDate1 = DateTimeOffset.Now.AddHours(-26);
+            DateTimeOffset inactiveDate2 = DateTimeOffset.Now.AddHours(-25);
+            string companyName1 = "Fake Company";
+            string companyName2 = "Other Company";
+
+            var mock = new Mock<IRssReader>();
+            mock.Setup(r => r.LoadRssFeed(It.IsAny<string>())).Returns(true);
+            mock.SetupSequence(r => r.MostRecentItemPublished)
+                .Returns(inactiveDate1)
+                .Returns(inactiveDate1)
+                .Returns(inactiveDate2)
+                .Returns(inactiveDate2);
+            mock.Setup(r => r.IsLoaded).Returns(true);
+            mockReader = mock.Object;
+
+            IRssActivityMonitor monitor = new ActivityMonitor(mockReader);
+
+            Dictionary<string, List<string>> inputRssFeeds = new Dictionary<string, List<string>>();
+            inputRssFeeds.Add(companyName1, new List<string>() { "http://fake.feed.xml" });
+            inputRssFeeds.Add(companyName2, new List<string>() { "http://fake.second-feed.xml" });
+
+            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds, 0);
+
+            Assert.Fail("Exception should have been thrown prior to this point");
+
+        }
+
+        [TestMethod]
         public void FindInactiveRssFeeds_RssReaderErrorTreatAsInactive_ReturnListOfOne()
         {
             DateTimeOffset inactiveDate1 = DateTimeOffset.Now.AddHours(-21);
@@ -244,6 +275,78 @@ namespace RssActivityMonitorTests
             List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds, 1, false);
 
             Assert.Fail("Exeption should have been raised prior to this point");
+
+        }
+
+        [TestMethod]
+        public void FindInactiveRssFeeds_InputDictionaryEmpty_ReturnListOfZero()
+        {
+            DateTimeOffset inactiveDate = DateTimeOffset.Now.AddHours(-23);
+
+            var mock = new Mock<IRssReader>();
+            mock.Setup(r => r.LoadRssFeed(It.IsAny<string>())).Returns(true);
+            mock.Setup(r => r.MostRecentItemPublished).Returns(inactiveDate);
+            mock.SetupSequence(r => r.IsLoaded)
+                .Returns(false)
+                .Returns(true);
+            mockReader = mock.Object;
+
+            IRssActivityMonitor monitor = new ActivityMonitor(mockReader);
+
+            Dictionary<string, List<string>> inputRssFeeds = new Dictionary<string, List<string>>();
+
+            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds);
+
+            Assert.AreEqual(0, InactiveCompanies.Count);
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void FindInactiveRssFeeds_InputDictionaryNull_ExceptionThrown()
+        {
+            DateTimeOffset inactiveDate = DateTimeOffset.Now.AddHours(-23);
+
+            var mock = new Mock<IRssReader>();
+            mock.Setup(r => r.LoadRssFeed(It.IsAny<string>())).Returns(true);
+            mock.Setup(r => r.MostRecentItemPublished).Returns(inactiveDate);
+            mock.SetupSequence(r => r.IsLoaded)
+                .Returns(false)
+                .Returns(true);
+            mockReader = mock.Object;
+
+            IRssActivityMonitor monitor = new ActivityMonitor(mockReader);
+
+            Dictionary<string, List<string>> inputRssFeeds = null;
+
+            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds);
+
+            Assert.Fail("Exeption should have been raised prior to this point");
+
+        }
+
+        [TestMethod]
+        public void FindInactiveRssFeeds_CompanyUrlListIsEmpty_ReturnListOfZero()
+        {
+            DateTimeOffset inactiveDate = DateTimeOffset.Now.AddHours(-23);
+            string companyName = "Fake Company";
+
+            var mock = new Mock<IRssReader>();
+            mock.Setup(r => r.LoadRssFeed(It.IsAny<string>())).Returns(true);
+            mock.Setup(r => r.MostRecentItemPublished).Returns(inactiveDate);
+            mock.SetupSequence(r => r.IsLoaded)
+                .Returns(false)
+                .Returns(true);
+            mockReader = mock.Object;
+
+            IRssActivityMonitor monitor = new ActivityMonitor(mockReader);
+
+            Dictionary<string, List<string>> inputRssFeeds = new Dictionary<string, List<string>>();
+            inputRssFeeds.Add(companyName, new List<string>());
+
+            List<string> InactiveCompanies = monitor.FindInactiveRssFeeds(inputRssFeeds);
+
+            Assert.AreEqual(0, InactiveCompanies.Count);
 
         }
 
