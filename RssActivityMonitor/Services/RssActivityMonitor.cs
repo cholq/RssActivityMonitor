@@ -17,6 +17,14 @@ namespace RssActivityMonitor.Services
             this._reader = rssReader;
         }
 
+        /// <summary>
+        ///  Function takes a Dictionary keyed by Company Name (string) and valued by a list of RSS Feed URLs (List<string>) 
+        ///  and finds which companies have inactive RSS Feeds.
+        /// </summary>
+        /// <param name="FeedsToCheck">Dictionary of Companies with their RSS Feeds</param>
+        /// <param name="NumberOfDays">Number of days back from current Date-Time to check for activity</param>
+        /// <param name="ConsiderErrorsInactive">If an exception is thrown while looking at the RSS Feed, treat that feed as inactive</param>
+        /// <returns>A list of Company Names that have been inactive on RSS Feeds</returns>
         public List<string> FindInactiveRssFeeds(Dictionary<string, List<string>> FeedsToCheck, int NumberOfDays = 1, bool ConsiderErrorsInactive = true)
         {
             if (FeedsToCheck == null) { throw new ArgumentOutOfRangeException("FeedsToCheck", "Dictionary of Feeds to Check cannot be NULL"); }
