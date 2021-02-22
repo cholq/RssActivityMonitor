@@ -21,7 +21,18 @@ namespace RssActivityMonitor.TestHarness
             IRssReader myRssReader = new RssReader();
             IRssActivityMonitor myActivityMonitor = new ActivityMonitor(myRssReader);
 
-            List<string> InactiveCompanies = myActivityMonitor.FindInactiveRssFeeds(inputRssFeeds);
+            try
+            {
+                List<string> InactiveCompanies = myActivityMonitor.FindInactiveRssFeeds(inputRssFeeds, 1, true);
+                Console.WriteLine("inactives: " + InactiveCompanies.Count.ToString());
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("error: " + ex.Message);
+            }
+
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey();
 
         }
     }

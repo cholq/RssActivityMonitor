@@ -68,6 +68,10 @@ namespace RssActivityMonitor.Services
             {
                 return (this._reader.LastUpdateTime > this._reader.MostRecentItemPublished) ? this._reader.LastUpdateTime : this._reader.MostRecentItemPublished;
             }
+            else
+            {
+                throw new Exception(string.Format("Unable to load RSS Feed: {0}", url));
+            }
 
             return DateTimeOffset.MinValue;
         }
